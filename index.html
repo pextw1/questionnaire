@@ -2,34 +2,41 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบสอบถามความพึงพอใจ2</title>
+    <!-- CRITICAL FIX: Ensure viewport is set for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>แบบสอบถามความพึงพอใจ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /*
-         * Responsive Fixes and Scroll Conflict Resolution 
-         * FIX 1: CSS เพื่อรองรับการเลื่อนใน iFrame/Mobile
+        /* * FIXES START: AGGRESSIVE MOBILE SCROLL FIX 
+         * บังคับให้ HTML และ BODY เป็น Scroll Container หลัก 
+         * วิธีนี้จะช่วยป้องกัน Parent Frame ไม่ให้ดักจับ Touch Scroll Events
          */
+        html, body {
+            /* 1. Force full viewport height */
+            height: 100%; 
+            /* 2. Force scrollable on content overflow */
+            overflow: auto; 
+            /* 3. Enhance touch scrolling smoothness on iOS */
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #fbf3ed;
             padding: 1rem;
             color: #4A5568;
             margin: 0; 
-            /* *** CRITICAL iFrame FIXES (Responsiveness) *** */
             width: 100vw; 
             min-width: 100%; 
             overflow-x: hidden; /* ป้องกัน Horizontal Scroll */
-            /* *** CRITICAL iFrame FIXES (Scroll Conflict) *** */
-            /* ป้องกันการเลื่อนทะลุไปหน้าเว็บหลัก (Google Sites / GitHub Pages) */
+            /* ป้องกันการเลื่อนทะลุไปหน้าเว็บหลัก (Scroll Chaining) */
             overscroll-behavior: contain; 
-            /* ************************************************************ */
-            /* ต้องมี min-height เพื่อให้เนื้อหาที่ยาวเกินหน้าจอสามารถเลื่อนได้ */
-            min-height: 100vh;
         }
+        /* FIXES END */
+
         .container {
             width: 100%;
             max-width: 900px;
@@ -190,7 +197,7 @@
     <div id="main-page" class="container">
         <!-- หัวข้อหลัก -->
         <h1 class="text-xl sm:text-2xl font-bold mb-1 text-center text-red-600">
-            แบบสอบถามความคิดเห็นเกี่ยวกับการเรียนภาษาอังกฤษและภาษาจีน
+            แบบสอบถามความคิดเห็นเกี่ยวกับการเรียนภาษาอังกฤษและภาษาจีน2
         </h1>
         <h1 class="text-2xl sm:text-3xl font-extrabold mb-6 text-center text-blue-800">
             โครงการพัฒนาระบบจัดการศึกษาภาษาต่างประเทศ
@@ -499,35 +506,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- SCROLL CONFLICT RESOLUTION FOR MOBILE DEVICES (CRITICAL FIX) ---
-            // FIX 2: JavaScript เพื่อจัดการ Touch Events บนมือถือ/iFrame
-            // โค้ดนี้จะช่วยให้การเลื่อนภายในฟอร์มไม่ถูกขัดจังหวะโดยหน้าเว็บภายนอก
-            const body = document.body;
-            let startY;
-            
-            body.addEventListener('touchstart', (e) => {
-                startY = e.touches[0].clientY;
-            }, { passive: false });
-
-            body.addEventListener('touchmove', (e) => {
-                const deltaY = startY - e.touches[0].clientY;
-                const scrollableHeight = body.scrollHeight - body.clientHeight;
-                const scrollTop = body.scrollTop;
-
-                // If scrolling up from the top edge, or scrolling down from the bottom edge, 
-                // prevent the default (which would scroll the parent page).
-                if ((scrollTop === 0 && deltaY < 0) || (scrollTop === scrollableHeight && deltaY > 0)) {
-                    // ป้องกันการเลื่อนเริ่มต้นของหน้าเว็บหลัก
-                    e.preventDefault(); 
-                } else {
-                    // อนุญาตให้เนื้อหาภายใน iFrame เลื่อนได้ตามปกติ
-                    e.stopPropagation();
-                }
-            }, { passive: false });
-            // --- END SCROLL FIX ---
-
-
             // Dynamically generate grade options for all relevant forms
             const gradeSelects = ['grade_teacher', 'grade_parent'];
             gradeSelects.forEach(id => {
