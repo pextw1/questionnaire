@@ -10,7 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /*
-         * Responsive Fixes and Scroll Conflict Resolution for Google Sites iFrame:
+         * Responsive Fixes and Scroll Conflict Resolution 
+         * FIX 1: CSS เพื่อรองรับการเลื่อนใน iFrame/Mobile
          */
         body {
             font-family: 'Kanit', sans-serif;
@@ -21,11 +22,13 @@
             /* *** CRITICAL iFrame FIXES (Responsiveness) *** */
             width: 100vw; 
             min-width: 100%; 
-            overflow-x: hidden; 
+            overflow-x: hidden; /* ป้องกัน Horizontal Scroll */
             /* *** CRITICAL iFrame FIXES (Scroll Conflict) *** */
-            /* This property prevents scroll chaining to the parent document */
-            overscroll-behavior: contain;
+            /* ป้องกันการเลื่อนทะลุไปหน้าเว็บหลัก (Google Sites / GitHub Pages) */
+            overscroll-behavior: contain; 
             /* ************************************************************ */
+            /* ต้องมี min-height เพื่อให้เนื้อหาที่ยาวเกินหน้าจอสามารถเลื่อนได้ */
+            min-height: 100vh;
         }
         .container {
             width: 100%;
@@ -498,8 +501,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- SCROLL CONFLICT RESOLUTION FOR MOBILE DEVICES (CRITICAL FIX) ---
-            // This prevents the parent page (Google Site) from intercepting touch events
-            // and allows scrolling to happen properly within the iFrame content.
+            // FIX 2: JavaScript เพื่อจัดการ Touch Events บนมือถือ/iFrame
+            // โค้ดนี้จะช่วยให้การเลื่อนภายในฟอร์มไม่ถูกขัดจังหวะโดยหน้าเว็บภายนอก
             const body = document.body;
             let startY;
             
@@ -515,11 +518,10 @@
                 // If scrolling up from the top edge, or scrolling down from the bottom edge, 
                 // prevent the default (which would scroll the parent page).
                 if ((scrollTop === 0 && deltaY < 0) || (scrollTop === scrollableHeight && deltaY > 0)) {
-                    // Prevent the default touchmove behavior only if we are at the scroll limit
-                    // to prevent "rubber-banding" or parent page scroll.
+                    // ป้องกันการเลื่อนเริ่มต้นของหน้าเว็บหลัก
                     e.preventDefault(); 
                 } else {
-                    // Allow the default behavior (scrolling inside the iFrame)
+                    // อนุญาตให้เนื้อหาภายใน iFrame เลื่อนได้ตามปกติ
                     e.stopPropagation();
                 }
             }, { passive: false });
@@ -634,6 +636,8 @@
         function showForm(formId) {
             document.getElementById('main-page').classList.add('hidden');
             document.getElementById(formId).classList.remove('hidden');
+            // Force scroll to top when form is shown
+            window.scrollTo(0, 0); 
         }
 
         function showPage(pageId) {
@@ -641,6 +645,8 @@
                 form.classList.add('hidden');
             });
             document.getElementById(pageId).classList.remove('hidden');
+            // Force scroll to top when main page is shown
+            window.scrollTo(0, 0); 
         }
 
         // Show custom dialog
@@ -671,7 +677,7 @@
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
 
-                // *** IMPORTANT: Replace with your actual Google Apps Script Web App URL ***
+                // *** IMPORTANT: URL นี้คือ Google Apps Script Web App URL ที่ได้จากการ Deploy โค้ด ***
                 const url = "YOUR_WEB_APP_URL_HERE"; 
 
                 try {
